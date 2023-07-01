@@ -5,7 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.dicoding.todoapp.R
+import com.dicoding.todoapp.notification.NotificationWorker
+import java.util.concurrent.TimeUnit
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -29,6 +34,24 @@ class SettingsActivity : AppCompatActivity() {
             prefNotification?.setOnPreferenceChangeListener { preference, newValue ->
                 val channelName = getString(R.string.notify_channel_name)
                 //TODO 13 : Schedule and cancel daily reminder using WorkManager with data channelName
+                val notificationWorkRequest =
+                    PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.MINUTES)
+                        .addTag(channelName)
+                        .build()
+
+                val workManager = WorkManager.getInstance(requireContext())
+
+                if (newValue as Boolean) {
+                    workManager.enqueueUniquePeriodicWork(
+                        channelName,
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        notificationWorkRequest
+                    )
+                } else {
+                    workManager.cancelAllWorkByTag(channelName)
+                    workManager.pruneWork()
+                }
+
                 true
             }
 
