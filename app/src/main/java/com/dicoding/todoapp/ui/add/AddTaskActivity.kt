@@ -43,10 +43,12 @@ class AddTaskActivity : AppCompatActivity(), DatePickerFragment.DialogDateListen
 
                 val edTitle = findViewById<TextInputEditText>(R.id.add_ed_title).text.toString()
                 val edDescription = findViewById<TextInputEditText>(R.id.add_ed_description).text.toString()
+                val tvDueDate = findViewById<TextView>(R.id.add_tv_due_date).text
 
                 when {
                     edTitle.isEmpty() -> false
                     edDescription.isEmpty() -> false
+                    tvDueDate == getString(R.string.due_date) -> false
                     else -> {
                         addTaskViewModel.insertTask(Task(0, edTitle, edDescription, dueDateMillis))
                         finish()
