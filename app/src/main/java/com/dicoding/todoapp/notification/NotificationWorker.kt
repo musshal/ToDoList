@@ -39,22 +39,17 @@ class NotificationWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, p
 
     override fun doWork(): Result {
         //TODO 14 : If notification preference on, get nearest active task from repository and show notification with pending intent
-
         val taskRepository = TaskRepository.getInstance(applicationContext)
         val nearestActiveTask = taskRepository.getNearestActiveTask()
-
         showAlarmNotification(applicationContext, nearestActiveTask)
-
         return Result.success()
     }
 
     @SuppressLint("ServiceCast")
     fun showAlarmNotification(context: Context, task: Task) {
 
-        val channelId = "bobbyNotification"
-
+        val channelId = "channel_id"
         val message = context.resources.getString(R.string.notify_content, DateConverter.convertMillisToString(task.dueDateMillis))
-
         val notificationManagerCompat =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val builder = NotificationCompat.Builder(context, channelId)

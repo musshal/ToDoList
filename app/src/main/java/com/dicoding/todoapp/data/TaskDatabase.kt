@@ -30,18 +30,18 @@ abstract class TaskDatabase : RoomDatabase() {
 
         fun getInstance(context: Context): TaskDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    TaskDatabase::class.java,
-                    "task.db"
-                )
+                val instance = Room
+                    .databaseBuilder(
+                        context.applicationContext,
+                        TaskDatabase::class.java,
+                        "task.db"
+                    )
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             INSTANCE?.let { taskDatabase ->
                                 CoroutineScope(Dispatchers.IO).launch {
                                     val taskDao = taskDatabase.taskDao()
-
                                     fillWithStartingData(context, taskDao)
                                 }
                             }
